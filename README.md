@@ -15,7 +15,7 @@ This project is a simple REST API based on Express.js, allowing you to manage co
 1. Create a folder:
 
    ```sh
-   npx json-express-crud-and-file
+   npx json-express-crud
    ```
 
 ### Main Endpoints
