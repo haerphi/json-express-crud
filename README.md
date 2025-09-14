@@ -1,94 +1,49 @@
 # Express JSON Server
 
-Ce projet est une API REST simple basée sur Express.js, permettant de manipuler des collections de données stockées dans des fichiers JSON. Il gère l’authentification, l’autorisation, l’upload de fichiers, et la persistance des données.
+This project is a simple REST API based on Express.js, allowing you to manage collections of data stored in JSON files. It handles authentication, authorization, file uploads, and data persistence.
 
-## Fonctionnalités
+## Features
 
-- CRUD sur les collections (Create, Read, Update, Delete)
-- Authentification et autorisation par token
-- Attribution d’un propriétaire à chaque ressource
-- Upload de fichiers (images) associés à une ressource via Multer
-- Persistance automatique dans les fichiers JSON (`data/db.json`, `data/auth.json`)
+- CRUD operations on collections (Create, Read, Update, Delete)
+- Authentication and authorization via token
+- Ownership assignment for each resource
+- File upload (images) associated with a resource using Multer
+- Automatic persistence in JSON files (`data/db.json`, `data/auth.json`)
 
-## Structure du projet
+## Usage
 
-```
-src/
-	index.js                  // Point d’entrée du serveur Express
-	factory/
-		route-factory.js        // Générateur de routes CRUD + upload
-		authentication-routes.js// Routes d’authentification
-		authorize-factory.js    // Middleware d’autorisation
-	json/
-		save-db.js              // Sauvegarde des données
-	middlewares/
-		authenticate.js         // Middleware d’authentification
-data/
-	db.json                   // Données des collections
-	auth.json                 // Utilisateurs et rôles
-public/
-	img/users/                // Dossier des images uploadées
-```
-
-## Installation
-
-1. Clone le dépôt :
+1. Create a folder:
 
    ```sh
-   git clone https://github.com/phil-bstorm/Express-json-server.git
-   cd Express-json-server
+   npx json-express-crud-and-file
    ```
 
-2. Installe les dépendances :
-   ```sh
-   npm install
-   ```
+### Main Endpoints
 
-## Utilisation
+- `POST /<collection>`: Create a resource
+- `GET /<collection>`: List all resources
+- `GET /<collection>/<id>`: Read a resource
+- `PUT /<collection>/<id>`: Update a resource
+- `DELETE /<collection>/<id>`: Delete a resource
+- `POST /<collection>/<id>/upload`: Upload an image for a resource (field `file` in a `multipart/form-data` form)
 
-1. Lance le serveur :
+### Authentication
 
-   ```sh
-   npm start
-   ```
+- `POST /auth/login`: Authenticate with `email` and `password`
+  - Returns a JWT token to use in the `Authorization` header
+- `POST /auth/register`: Register a new user with `email`, `password`, and `role` (optional, default is `user`)
+  Note: more user information can be added during registration
 
-   ou
+## Customization
 
-   ```sh
-   node src/index.js
-   ```
+- Edit `data/db.json` to add or modify collections
+- Edit `data/auth.json` to manage users and roles
 
-2. Accède à l’API via `http://localhost:3000/`
-
-### Endpoints principaux
-
-- `POST /<collection>` : Créer une ressource
-- `GET /<collection>` : Lister toutes les ressources
-- `GET /<collection>/<id>` : Lire une ressource
-- `PUT /<collection>/<id>` : Modifier une ressource
-- `DELETE /<collection>/<id>` : Supprimer une ressource
-- `POST /<collection>/<id>/upload` : Uploader une image pour une ressource (champ `file` dans le formulaire)
-
-### Authentification
-
-- Utilise un token JWT ou similaire (voir `middlewares/authenticate.js`)
-- Les rôles et permissions sont définis dans `data/auth.json`
-
-### Upload de fichiers
-
-- Envoie une requête POST avec un champ `file` (type `multipart/form-data`) vers `/collection/:id/upload`
-- Le fichier est sauvegardé dans `public/img/users/` et le chemin est associé à la ressource
-
-## Personnalisation
-
-- Modifie `data/db.json` pour ajouter ou éditer des collections
-- Modifie `data/auth.json` pour gérer les utilisateurs et rôles
-
-## Dépendances principales
+## Main Dependencies
 
 - express
 - multer
 
-## Licence
+## License
 
 MIT
