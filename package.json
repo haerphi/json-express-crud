@@ -15,7 +15,10 @@
     "api",
     "crud"
   ],
-  "repository": "git+https://github.com/haerphi/json-express-crud-and-file.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haerphi/json-express-crud-and-file.git"
+  },
   "homepage": "https://github.com/haerphi/json-express-crud-and-file",
   "author": "haerphi",
   "license": "ISC",
