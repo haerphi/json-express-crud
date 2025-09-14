@@ -5,8 +5,9 @@
   "main": "src/index.js",
   "bin": "./src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "watch": "npx nodemon src/index.js"
+    "start": "npm run build && node dist/index.js",
+    "watch": "npx nodemon src/index.js",
+    "build": "esbuild src/index.js --bundle --platform=node --outfile=dist/index.js --minify"
   },
   "keywords": [
     "express",
@@ -24,5 +25,8 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.9"
   }
 }
