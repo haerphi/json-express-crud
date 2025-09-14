@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
@@ -9,8 +11,8 @@ const authenticationRoutes = require("./factory/authentication-routes");
 const app = express();
 const port = 3000;
 
-// Load files from "data" directory
-const dataDir = path.join(__dirname, "../", "data");
+// Load files from "data" directory (from the executable location)
+const dataDir = path.join(process.cwd(), "data");
 
 // Ensure the data directory exists
 if (!fs.existsSync(dataDir)) {
@@ -59,6 +61,7 @@ app.use(authenticate);
 // Loop through db collections and create routes
 Object.keys(db).forEach((collectionName) => {
   routeFactory(app, db, auth[collectionName] || {}, collectionName);
+  console.log(`Routes for /${collectionName} created`);
 });
 
 // Authentication routes (login & register)
