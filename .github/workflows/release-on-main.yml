@@ -79,7 +79,7 @@ jobs:
         run: |
           # --provenance pour l'attestation supply-chain
           # Ajoute --access public si package scoped public (@org/pkg)
-          npm publish --provenance
+          npm publish --provenance --access public
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
