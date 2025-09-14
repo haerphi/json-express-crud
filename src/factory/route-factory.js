@@ -40,7 +40,34 @@ const routeFactory = (app, db, auth, collectionName) => {
   // Read All
   const readAllMiddleware = authorizeFactory(collectionName, auth, "readAll");
   app.get(basePath, ...readAllMiddleware, (req, res) => {
-    res.json(db[collectionName]);
+    let items = db[collectionName];
+
+    // filtering
+    Object.keys(req.query).forEach((key) => {
+      if (key !== "page" && key !== "limit") {
+        items = items.filter((item) => {
+          if (item[key] === undefined) return false;
+          return item[key]
+            .toString()
+            .toLowerCase()
+            .includes(req.query[key].toString().toLowerCase());
+        });
+      }
+    });
+
+    // pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    items = items.slice(startIndex, endIndex);
+
+    console.log(
+      `GET ${basePath} - page ${page}, limit ${limit}, items ${items.length}`
+    );
+
+    res.json(items);
   });
 
   // Read One
