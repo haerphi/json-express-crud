@@ -47,6 +47,13 @@ const routeFactory = (app, db, auth, collectionName) => {
       if (key !== "page" && key !== "limit") {
         items = items.filter((item) => {
           if (item[key] === undefined) return false;
+
+          if (Array.isArray(item[key])) {
+            return item[key]
+              .map((v) => v.toString().toLowerCase())
+              .includes(req.query[key].toString().toLowerCase());
+          }
+
           return item[key]
             .toString()
             .toLowerCase()
