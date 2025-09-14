@@ -48,7 +48,12 @@ if (fs.existsSync(authPath)) {
 }
 
 // Static folder "public"
-app.use(express.static(path.join(__dirname, "../", "public")));
+// Ensure the public directory exists
+const publicDir = path.join(process.cwd(), "public");
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir);
+}
+app.use(express.static(publicDir));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
