@@ -1,0 +1,90 @@
+name: Release on main → npm publish + GitHub Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write # push du tag + création de la Release
+  id-token: write # npm provenance
+  packages: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (with write token for pushing tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # on a besoin de l'historique pour les tags
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - name: Read package name & version
+        id: pkg
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+          test -f dist/index.js || (echo "dist/index.js introuvable" && exit 1)
+          ls -la dist || true
+
+      # (Optionnel mais recommandé) ignorer si cette version existe déjà sur le registre npm
+      - name: Skip if version already on npm
+        id: npmskip
+        env:
+          PKG_NAME: ${{ steps.pkg.outputs.name }}
+          PKG_VERSION: ${{ steps.pkg.outputs.version }}
+        run: |
+          EXISTS=$(npm view "$PKG_NAME@${PKG_VERSION}" version 2>/dev/null || true)
+          if [ "$EXISTS" = "$PKG_VERSION" ]; then
+            echo "already=true" >> $GITHUB_OUTPUT
+            echo "Version $PKG_NAME@$PKG_VERSION existe déjà sur npm, on saute la publication."
+          else
+            echo "already=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create & push git tag vX.Y.Z (from package.json)
+        if: steps.npmskip.outputs.already != 'true'
+        env:
+          VERSION: ${{ steps.pkg.outputs.version }}
+        run: |
+          TAG="v${VERSION}"
+          git fetch --tags
+          if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+            echo "Tag ${TAG} existe déjà, on ne le recrée pas."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -a "${TAG}" -m "Release ${TAG}"
+            git push origin "${TAG}"
+          fi
+
+      - name: Publish to npm
+        if: steps.npmskip.outputs.already != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # --provenance pour l'attestation supply-chain
+          # Ajoute --access public si package scoped public (@org/pkg)
+          npm publish --provenance
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.pkg.outputs.version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
