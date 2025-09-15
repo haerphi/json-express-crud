@@ -1,4 +1,5 @@
 const express = require("express");
+var cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const morgan = require("morgan");
@@ -8,6 +9,8 @@ const authenticationRoutes = require("./factory/authentication-routes");
 
 const app = express();
 const port = 3000;
+
+app.use(cors());
 
 // Load files from "data" directory (from the executable location)
 const dataDir = path.join(process.cwd(), "data");
