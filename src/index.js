@@ -23,6 +23,10 @@ const dbPath = path.join(dataDir, "db.json");
 if (fs.existsSync(dbPath)) {
   const rawData = fs.readFileSync(dbPath);
   db = JSON.parse(rawData);
+
+  if (!db.users) {
+    db.users = [];
+  }
 } else {
   fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
 }
