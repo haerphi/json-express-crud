@@ -76,6 +76,8 @@ Object.keys(db).forEach((collectionName) => {
 
 // Authentication routes (login & register)
 authenticationRoutes(app, db);
+console.log("Routes for login: /auth/login");
+console.log("Routes for register: /auth/register");
 
 // Start the server
 app.listen(port, () => {
