@@ -102,8 +102,6 @@ const routeFactory = (app, db, auth, collectionName) => {
         return res.status(403).json({ error: "Forbidden" });
       }
 
-      console.log(req.body);
-
       db[collectionName][index] = { ...db[collectionName][index], ...req.body };
       saveDb(db);
       res.json({ data: db[collectionName][index] });
