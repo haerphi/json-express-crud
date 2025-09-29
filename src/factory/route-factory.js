@@ -97,9 +97,12 @@ const routeFactory = (app, db, auth, collectionName) => {
   app.put(`${basePath}/:id`, ...updateMiddleware, (req, res) => {
     const index = db[collectionName].findIndex((i) => i.id == req.params.id);
     if (index !== -1) {
+      const item = db[collectionName][index];
       if (!isOwner(auth, "update", item, req.token)) {
         return res.status(403).json({ error: "Forbidden" });
       }
+
+      console.log(req.body);
 
       db[collectionName][index] = { ...db[collectionName][index], ...req.body };
       saveDb(db);
@@ -114,6 +117,7 @@ const routeFactory = (app, db, auth, collectionName) => {
   app.delete(`${basePath}/:id`, ...deleteMiddleware, (req, res) => {
     const index = db[collectionName].findIndex((i) => i.id == req.params.id);
     if (index !== -1) {
+      const item = db[collectionName][index];
       if (!isOwner(auth, "delete", item, req.token)) {
         return res.status(403).json({ error: "Forbidden" });
       }

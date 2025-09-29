@@ -62,6 +62,8 @@ app.use(express.static(publicDir));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+// Middleware to parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
 
 // Middlware Morgan for logging
 app.use(morgan("dev"));
