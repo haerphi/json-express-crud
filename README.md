@@ -39,6 +39,13 @@ This project is a simple REST API based on Express.js, allowing you to manage co
 - Edit `data/db.json` to add or modify collections
 - Edit `data/auth.json` to manage users and roles
 
+## Breaking changes
+
+### v2.0.0
+
+- Normalized API response structure: All non-error responses now return an object with a `data` property containing the actual response data.
+  - updated `GET /<collection>` to return `{ count: 999, data: [...] }`
+
 ## Main Dependencies
 
 - express

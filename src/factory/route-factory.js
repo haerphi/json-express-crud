@@ -34,18 +34,18 @@ const routeFactory = (app, db, auth, collectionName) => {
 
     db[collectionName].push(newItem);
     saveDb(db);
-    res.status(201).json(newItem);
+    res.status(201).json({ data: newItem });
   });
 
   // Read All
   const readAllMiddleware = authorizeFactory(collectionName, auth, "readAll");
   app.get(basePath, ...readAllMiddleware, (req, res) => {
-    let items = db[collectionName];
+    let collection = db[collectionName];
 
     // filtering
     Object.keys(req.query).forEach((key) => {
       if (key !== "page" && key !== "limit") {
-        items = items.filter((item) => {
+        collection = collection.filter((item) => {
           if (item[key] === undefined) return false;
 
           if (Array.isArray(item[key])) {
@@ -68,13 +68,13 @@ const routeFactory = (app, db, auth, collectionName) => {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
-    items = items.slice(startIndex, endIndex);
+    const items = collection.slice(startIndex, endIndex);
 
     console.log(
-      `GET ${basePath} - page ${page}, limit ${limit}, items ${items.length}`
+      `GET ${basePath} - page ${page}, limit ${limit}, items ${collection.length}`
     );
 
-    res.json(items);
+    res.json({ count: collection.length, data: items });
   });
 
   // Read One
@@ -83,7 +83,7 @@ const routeFactory = (app, db, auth, collectionName) => {
     const item = db[collectionName].find((i) => i.id == req.params.id);
     if (item) {
       if (isOwner(auth, "read", item, req.token)) {
-        return res.json(item);
+        return res.json({ data: item });
       } else {
         return res.status(403).json({ error: "Forbidden" });
       }
@@ -103,7 +103,7 @@ const routeFactory = (app, db, auth, collectionName) => {
 
       db[collectionName][index] = { ...db[collectionName][index], ...req.body };
       saveDb(db);
-      res.json(db[collectionName][index]);
+      res.json({ data: db[collectionName][index] });
     } else {
       res.status(404).json({ error: "Not found" });
     }
@@ -120,7 +120,7 @@ const routeFactory = (app, db, auth, collectionName) => {
 
       const deletedItem = db[collectionName].splice(index, 1);
       saveDb(db);
-      res.json(deletedItem);
+      res.json({ data: deletedItem });
     } else {
       res.status(404).json({ error: "Not found" });
     }
@@ -202,9 +202,11 @@ const routeFactory = (app, db, auth, collectionName) => {
       saveDb(db);
 
       return res.json({
-        message: "File uploaded successfully",
-        itemId: req.params.id,
-        files,
+        data: {
+          message: "File uploaded successfully",
+          itemId: req.params.id,
+          files,
+        },
       });
     }
   );
