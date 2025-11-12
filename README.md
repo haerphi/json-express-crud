@@ -37,6 +37,8 @@ This project is a simple REST API based on Express.js, allowing you to manage co
 ## Customization
 
 - Edit `data/db.json` to add or modify collections
+  - Possible actions: `create`, `update`, `delete`, `read`, `readAll`
+  - Possible values: `everyone`_(not used in the program but better than leaving nothing...)_, `connected`, `owner`, `admin`
 - Edit `data/auth.json` to manage users and roles
 
 ## Breaking changes
